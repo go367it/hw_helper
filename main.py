@@ -3,6 +3,13 @@ import asyncio
 from typing import TypedDict, Annotated
 from reading_file import read_file
 from pathlib import Path
+from dotenv import load_dotenv
+from openai import OpenAI
+import os
+from rich import print
+
+# Load the .env file
+load_dotenv()
 
 # maingraph node for 
 async def maingraph():
@@ -16,7 +23,23 @@ async def maingraph():
 
     # node for llm call
     async def first_node(state: State):
+
+        try:
+            # Fetch API key
+            print("Calling open ai for response! \n")
+            client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+            # Make a sample request
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": "Hello, world!"}]
+            )
+
+            print(response.choices[0].message.content)
+        except Exception as e:
+            print(f"Error Occurred! \n {e}")
         
+        # to fetch the type of file
         file_path = Path("file.txt")
         response = read_file(file_path)
 
